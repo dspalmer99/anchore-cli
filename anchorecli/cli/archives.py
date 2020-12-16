@@ -43,11 +43,11 @@ def image_restore(ctx, image_digest):
     """
     Add an analyzed image to the analysis archive
     """
-    ctx.parent.obj.execute_callback()
-
     ecode = 0
 
     try:
+        anchorecli.cli.utils.handle_parent_callback(ctx)
+
         if not re.match(digest_regex, image_digest):
             raise Exception(
                 "Invalid image digest {}. Must conform to regex: {}".format(
@@ -86,11 +86,11 @@ def image_add(ctx, image_digests):
     """
     Add an analyzed image to the analysis archive
     """
-    ctx.parent.obj.execute_callback()
-
     ecode = 0
 
     try:
+        anchorecli.cli.utils.handle_parent_callback(ctx)
+
         for digest in image_digests:
             if not re.match(digest_regex, digest):
                 raise Exception(
@@ -129,11 +129,11 @@ def image_get(ctx, digest):
     """
     INPUT_IMAGE: Input image can be in the following formats: Image Digest, ImageID or registry/repo:tag
     """
-    ctx.parent.obj.execute_callback()
-
     ecode = 0
 
     try:
+        anchorecli.cli.utils.handle_parent_callback(ctx)
+
         ret = anchorecli.clients.apiexternal.get_archived_analysis(config, digest)
 
         if ret:
@@ -168,11 +168,11 @@ def image_get(ctx, digest):
 @images.command(name="list", short_help="List all archived image analyses")
 @click.pass_context
 def list_archived_analyses(ctx):
-    ctx.parent.obj.execute_callback()
-
     ecode = 0
 
     try:
+        anchorecli.cli.utils.handle_parent_callback(ctx)
+
         ret = anchorecli.clients.apiexternal.list_archived_analyses(config)
         ecode = anchorecli.cli.utils.get_ecode(ret)
         if ret["success"]:
@@ -204,11 +204,11 @@ def image_delete(ctx, digest, force):
     """
     INPUT_IMAGE: Input image can be in the following formats: Image Digest, ImageID or registry/repo:tag
     """
-    ctx.parent.obj.execute_callback()
-
     ecode = 0
 
     try:
+        anchorecli.cli.utils.handle_parent_callback(ctx)
+
         ret = anchorecli.clients.apiexternal.delete_archived_analysis(config, digest)
 
         if ret:
@@ -283,21 +283,21 @@ def rule_add(
     archive|delete: the transition to execute - archive or delete. delete transitions occur on already archived analysis, not on the active image analysis
 
     """
-    ctx.parent.obj.execute_callback()
-
     ecode = 0
 
-    if days_old == 0 and tag_versions_newer == 0:
-        resp = click.prompt(
-            "Are you sure you want to use 0 for both days old limit and number of tag versions newer? WARNING: This will archive all images that match the registry/repo/tag selectors as soon as they are analyzed",
-            type=click.Choice(["y", "n"]),
-            default="n",
-        )
-        if resp.lower() != "y":
-            ecode = 0
-            anchorecli.cli.utils.doexit(ecode)
-
     try:
+        anchorecli.cli.utils.handle_parent_callback(ctx)
+
+        if days_old == 0 and tag_versions_newer == 0:
+            resp = click.prompt(
+                "Are you sure you want to use 0 for both days old limit and number of tag versions newer? WARNING: This will archive all images that match the registry/repo/tag selectors as soon as they are analyzed",
+                type=click.Choice(["y", "n"]),
+                default="n",
+            )
+            if resp.lower() != "y":
+                ecode = 0
+                anchorecli.cli.utils.doexit(ecode)
+
         ret = anchorecli.clients.apiexternal.add_transition_rule(
             config,
             days_old,
@@ -334,11 +334,11 @@ def rule_add(
 @click.argument("rule_id", nargs=1)
 @click.pass_context
 def rule_get(ctx, rule_id):
-    ctx.parent.obj.execute_callback()
-
     ecode = 0
 
     try:
+        anchorecli.cli.utils.handle_parent_callback(ctx)
+
         ret = anchorecli.clients.apiexternal.get_transition_rule(config, rule_id)
 
         if ret:
@@ -369,11 +369,11 @@ def rule_get(ctx, rule_id):
 @rules.command(name="list", short_help="List all transition rules for the account")
 @click.pass_context
 def list_transition_rules(ctx):
-    ctx.parent.obj.execute_callback()
-
     ecode = 0
 
     try:
+        anchorecli.cli.utils.handle_parent_callback(ctx)
+
         ret = anchorecli.clients.apiexternal.list_transition_rules(config)
         ecode = anchorecli.cli.utils.get_ecode(ret)
         if ret["success"]:
@@ -401,11 +401,11 @@ def list_transition_rules(ctx):
 @click.argument("rule_id")
 @click.pass_context
 def rule_delete(ctx, rule_id):
-    ctx.parent.obj.execute_callback()
-
     ecode = 0
 
     try:
+        anchorecli.cli.utils.handle_parent_callback(ctx)
+
         ret = anchorecli.clients.apiexternal.delete_transition_rule(config, rule_id)
 
         if ret:
